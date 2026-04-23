@@ -1,0 +1,180 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  #stage {
+    width: 100%; min-height: 480px; background: #1a0533;
+    border-radius: 16px; overflow: hidden; position: relative;
+    display: flex; align-items: center; justify-content: center; flex-direction: column;
+  }
+  #stars-bg { position: absolute; inset: 0; pointer-events: none; }
+  #particles { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+  #content { position: relative; z-index: 5; display: flex; flex-direction: column; align-items: center; padding: 2rem 1rem; }
+  #start-screen { text-align: center; }
+  .big-btn {
+    background: linear-gradient(135deg, #e91e8c, #9c27b0);
+    color: #fff; border: none; border-radius: 50px; font-size: 22px;
+    font-weight: 500; padding: 16px 48px; cursor: pointer; letter-spacing: 1px;
+    margin-top: 1.5rem; transition: transform 0.15s;
+  }
+  .big-btn:hover { transform: scale(1.05); }
+  .big-btn:active { transform: scale(0.97); }
+  #start-title { font-size: 28px; font-weight: 500; color: #f9c8e8; margin-bottom: 0.5rem; letter-spacing: 2px; }
+  #start-sub { font-size: 16px; color: #c084fc; }
+  #num-display {
+    font-size: 160px; font-weight: 500; line-height: 1; color: #fff;
+    text-shadow: 0 0 40px #e91e8c, 0 0 80px #9c27b0;
+    font-family: Georgia, serif; display: none;
+    animation-name: numPop; animation-duration: 0.5s; animation-fill-mode: both;
+  }
+  @keyframes numPop {
+    0% { transform: scale(0.4); opacity: 0; }
+    60% { transform: scale(1.18); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  #num-label { font-size: 18px; color: #d8b4fe; letter-spacing: 4px; margin-top: 0.5rem; display: none; }
+  #bday-screen { display: none; text-align: center; }
+  #cake-anim { font-size: 80px; animation: cakeBounce 1s ease-in-out infinite alternate; display: block; margin-bottom: 1rem; }
+  @keyframes cakeBounce {
+    0% { transform: translateY(0) scale(1); }
+    100% { transform: translateY(-14px) scale(1.08); }
+  }
+  #hb-line1 { font-size: 38px; font-weight: 500; color: #f9c8e8; letter-spacing: 3px; animation: glow 2s ease-in-out infinite alternate; }
+  @keyframes glow {
+    0% { text-shadow: 0 0 10px #e91e8c; }
+    100% { text-shadow: 0 0 30px #e91e8c, 0 0 60px #f472b6; }
+  }
+  #hb-line2 { font-size: 46px; font-weight: 500; color: #f0abfc; margin: 0.3rem 0; animation: pulse2 1.5s ease-in-out infinite; }
+  @keyframes pulse2 { 0%,100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+  #hb-line3 { font-size: 28px; color: #fcd34d; margin-top: 0.6rem; letter-spacing: 2px; animation: shimmer2 2.5s ease-in-out infinite; }
+  @keyframes shimmer2 { 0%,100% { opacity: 1; } 50% { opacity: 0.65; } }
+  #icons-row { font-size: 32px; margin-top: 1rem; display: flex; gap: 12px; justify-content: center; }
+  .ic { display: inline-block; animation: floatRow 2s ease-in-out infinite; }
+  .ic:nth-child(2) { animation-delay: 0.2s; }
+  .ic:nth-child(3) { animation-delay: 0.4s; }
+  .ic:nth-child(4) { animation-delay: 0.6s; }
+  .ic:nth-child(5) { animation-delay: 0.8s; }
+  @keyframes floatRow { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+  #replay-btn { margin-top: 1.5rem; background: transparent; border: 1.5px solid #c084fc; color: #d8b4fe; border-radius: 50px; font-size: 15px; padding: 10px 28px; cursor: pointer; }
+  #replay-btn:hover { background: rgba(192,132,252,0.15); }
+  .confetti-p { position: absolute; border-radius: 2px; animation: fall var(--fd, 2s) var(--fd2, 0s) ease-in forwards; }
+  @keyframes fall { 0% { transform: translateY(-20px) rotate(0deg); opacity: 1; } 100% { transform: translateY(500px) rotate(600deg); opacity: 0; } }
+  #progress-ring { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 220px; height: 220px; display: none; z-index: 3; }
+</style>
+
+<div id="stage">
+  <canvas id="stars-bg"></canvas>
+  <div id="particles"></div>
+  <svg id="progress-ring" viewBox="0 0 220 220">
+    <circle cx="110" cy="110" r="100" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="6"/>
+    <circle id="ring-circle" cx="110" cy="110" r="100" fill="none" stroke="#e91e8c" stroke-width="6"
+      stroke-linecap="round" stroke-dasharray="628" stroke-dashoffset="628"
+      transform="rotate(-90 110 110)"/>
+  </svg>
+  <div id="content">
+    <div id="start-screen">
+      <div id="start-title">Birthday Countdown</div>
+      <div id="start-sub">for my angel 💖</div>
+      <button class="big-btn" onclick="startShow()">Start 10 Seconds</button>
+    </div>
+    <div id="num-display">10</div>
+    <div id="num-label">get ready...</div>
+    <div id="bday-screen">
+      <span id="cake-anim">🎂</span>
+      <div id="hb-line1">Happy Birthday</div>
+      <div id="hb-line2">My Angel 💖</div>
+      <div id="hb-line3">May all your dreams come true ✨</div>
+      <div id="icons-row">
+        <span class="ic">🌸</span>
+        <span class="ic">💖</span>
+        <span class="ic">🎊</span>
+        <span class="ic">🌟</span>
+        <span class="ic">🎁</span>
+      </div>
+      <button id="replay-btn" onclick="resetShow()">Replay</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const colors = ['#e91e8c','#9c27b0','#f472b6','#fbbf24','#34d399','#60a5fa','#f97316','#a78bfa'];
+  const numColors = ['#f9c8e8','#fcd34d','#a5f3fc','#bbf7d0','#c4b5fd','#fca5a5','#fed7aa','#d9f99d','#fbcfe8','#bfdbfe'];
+
+  function makeStars() {
+    const canvas = document.getElementById('stars-bg');
+    const stage = document.getElementById('stage');
+    canvas.width = stage.offsetWidth || 680;
+    canvas.height = stage.offsetHeight || 480;
+    canvas.style.position = 'absolute'; canvas.style.inset = '0';
+    canvas.style.width = '100%'; canvas.style.height = '100%';
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < 120; i++) {
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height;
+      const r = Math.random() * 1.8 + 0.3;
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,255,255,${Math.random()*0.7+0.3})`;
+      ctx.fill();
+    }
+  }
+
+  function spawnConfetti(count) {
+    const p = document.getElementById('particles');
+    p.innerHTML = '';
+    const w = document.getElementById('stage').offsetWidth || 680;
+    for (let i = 0; i < count; i++) {
+      const el = document.createElement('div');
+      el.className = 'confetti-p';
+      const size = 7 + Math.random() * 10;
+      el.style.cssText = `left:${Math.random()*w}px;top:0;width:${size}px;height:${size}px;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${Math.random()>0.5?'50%':'2px'};--fd:${1.4+Math.random()*2}s;--fd2:${Math.random()*1.5}s;`;
+      p.appendChild(el);
+    }
+    setTimeout(()=>{ p.innerHTML=''; spawnConfetti(60); }, 4000);
+  }
+
+  let countTimer = null;
+
+  function startShow() {
+    document.getElementById('start-screen').style.display = 'none';
+    const numEl = document.getElementById('num-display');
+    const lblEl = document.getElementById('num-label');
+    const ring = document.getElementById('progress-ring');
+    const ringCircle = document.getElementById('ring-circle');
+    numEl.style.display = 'block'; lblEl.style.display = 'block'; ring.style.display = 'block';
+    let n = 10;
+    function setNum(val) {
+      numEl.textContent = val;
+      numEl.style.color = numColors[10 - val] || '#fff';
+      numEl.style.animationName = 'none';
+      void numEl.offsetWidth;
+      numEl.style.animationName = 'numPop';
+      ringCircle.style.strokeDashoffset = 628 - (628 * (val/10));
+    }
+    setNum(10);
+    countTimer = setInterval(() => {
+      n--;
+      if (n > 0) { setNum(n); }
+      else {
+        clearInterval(countTimer);
+        numEl.style.display = 'none'; lblEl.style.display = 'none'; ring.style.display = 'none';
+        document.getElementById('bday-screen').style.display = 'block';
+        spawnConfetti(80);
+        setTimeout(()=>spawnConfetti(60), 4500);
+      }
+    }, 1000);
+  }
+
+  function resetShow() {
+    clearInterval(countTimer);
+    document.getElementById('bday-screen').style.display = 'none';
+    document.getElementById('particles').innerHTML = '';
+    document.getElementById('num-display').style.display = 'none';
+    document.getElementById('num-label').style.display = 'none';
+    document.getElementById('progress-ring').style.display = 'none';
+    document.getElementById('start-screen').style.display = 'block';
+  }
+
+  makeStars();
+  window.addEventListener('resize', makeStars);
+</script>
